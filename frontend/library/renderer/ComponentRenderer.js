@@ -6,17 +6,14 @@ class AComponent {
 class ComponentRenderer {
     /** @type {Injector} */ #injector;
 
-    constructor() {
-        this.#injector = new Injector();
-    }
-
-    addInjector(name, InjectionRef, ...args) {
-        this.#injector.create(name, InjectionRef, ...args);
+    constructor(injector) {
+        this.#injector = injector;
     }
 
     /**
      * @param {typeof AComponent} ComponentRef 
      * @param {HTMLElement} parentElementRef 
+     * @returns {AComponent}
      */
     render(ComponentRef, parentElementRef = document) {
         if (typeof ComponentRef !== "function") {
@@ -31,6 +28,7 @@ class ComponentRenderer {
             component.elementRef.innerHTML = component.htmlTemplate;
         }
         Utilities.callFunction(component, LifeCycleHooks.onAfterViewInit);
+        return component;
     }
 
     #injectInjection(component) {

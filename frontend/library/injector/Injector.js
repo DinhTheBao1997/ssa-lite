@@ -25,7 +25,7 @@ class Injector {
     }
 
     getInjection(name) {
-        this.#injections.get(name);
+        return this.#injections.get(name);
     }
 
     removeInjection(name) {
