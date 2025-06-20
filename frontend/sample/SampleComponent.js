@@ -2,15 +2,21 @@ class SampleComponent {
     /** @type {string} */ htmlTemplate = `
         <div>
             Hello Sample
+            <ssa-button [title]="title" (click)="onClick($even, title)"></ssa-button>
             <test></test>
         </div>
     `;
     /** @type {HTMLElement} */ elementRef;
     /** @type {TestService} */ service;
     /** @type {HTMLElement} */ selector = "sample";
+    /** @type {string} */ title = "sample";
 
     onInit() {
         this.service.test();
+    }
+
+    onClick(...even) {
+        console.log(even)
     }
 }
 
@@ -33,7 +39,9 @@ class TestService {
 function onloadCallback() {
     const starter = new Starter();
     starter.setRootComponentRef(SampleComponent);
-    starter.setChildComponentRefs([TestComponent]);
+    starter.setChildComponentRefs([TestComponent, SSAButton]);
     starter.addInjector("service", TestService);
     starter.start();
+    // DomUtils.addClass("body", "modal-open");
+    // DomUtils.removeClass("body", "modal-open");
 }

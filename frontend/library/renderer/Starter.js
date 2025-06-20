@@ -2,11 +2,11 @@ class Starter {
     /** @type {Injector} */ #injector;
     /** @type {AComponent} */ rootComponentRef;
     /** @type {AComponent[]} */ childComponentRefs;
-    /** @type {ComponentRenderer} */ render;
+    /** @type {Renderer} */ render;
     constructor() {
         this.childComponentRefs = [];
         this.#injector = new Injector();
-        this.render = new ComponentRenderer(this.#injector);
+        this.render = new Renderer(this.#injector);
     }
 
     addInjector(name, InjectionRef, ...args) {
@@ -21,10 +21,40 @@ class Starter {
         this.childComponentRefs = childComponentRefs;
     }
 
-    start() {
-        const root = this.render.render(this.rootComponentRef);
+    start(rootElement = document) {
+        const root = this.#renderRootComponent(rootElement) ;
+        this.#renderChildComponent(root);
+    }
+
+    /**
+     * @param {typeof AComponent} ComponentRef 
+     * @param {HTMLElement} parentElementRef 
+     * @returns {NodeListOf<Element>}
+     */
+    getElementRefs(ComponentRef, parentElementRef) {
+        const instance = new ComponentRef();
+        return parentElementRef.querySelectorAll(instance.selector);
+    }
+
+    /**
+     * @param {HTMLElement} rootElement 
+     * @returns {AComponent}
+     */
+    #renderRootComponent(rootElement) {
+        const rootElementRefs = this.getElementRefs(this.rootComponentRef, rootElement);
+        return this.render.render(this.rootComponentRef, rootElementRefs[0]);
+    }
+
+    /**
+     * @param {AComponent} root 
+     * @returns {void}
+     */
+    #renderChildComponent(root) {
         for (const childComponentRef of this.childComponentRefs) {
-            this.render.render(childComponentRef, root.elementRef);
+            const elementRefs = this.getElementRefs(childComponentRef, root.elementRef);
+            for (const elementRef of elementRefs) {
+                this.render.renderChild(childComponentRef, elementRef, root);
+            }
         }
     }
 }
